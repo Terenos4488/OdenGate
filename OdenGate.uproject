@@ -1,16 +1,13 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "4.15",
+	"EngineAssociation": "4.18",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
 			"Name": "OdenGate",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
+			"LoadingPhase": "Default"
 		}
 	]
 }

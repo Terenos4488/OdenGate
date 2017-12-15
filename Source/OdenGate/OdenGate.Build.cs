@@ -4,13 +4,13 @@ using UnrealBuildTool;
 
 public class OdenGate : ModuleRules
 {
-	public OdenGate(TargetInfo Target)
+	public OdenGate(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-        PublicIncludePaths.Add("C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include");
+        PublicIncludePaths.Add("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC");
 
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
