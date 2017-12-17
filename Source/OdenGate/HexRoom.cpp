@@ -28,6 +28,7 @@ void FHexRoom::ChangeType(ERoomTypes newType) {
 	switch (newType) {
 	case ERoomTypes::RT_BOSS:
 	case ERoomTypes::RT_SHOP:
+	case ERoomTypes::RT_TREASURE:
 		size = 1;
 		maxDoors = 1;
 		break;

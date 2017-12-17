@@ -68,19 +68,13 @@ const Shape DOUBLE_LINE_LEFT(10, { LEFT_UP });
 const Shape DOUBLE_LINE_RIGHT(10, { RIGHT_UP });
 const Shape TRIANGLE_LEFT(12, { D_UP, LEFT_DOWN });
 const Shape TRIANGLE_RIGHT(12, { D_UP, RIGHT_DOWN });
-const Shape TRIPLE_LINE_UP(14, { D_UP, D_UP });
-const Shape TRIPLE_LINE_LEFT(14, { LEFT_UP, LEFT_UP });
-const Shape TRIPLE_LINE_RIGHT(14, { RIGHT_UP, RIGHT_UP });
 
-const uint8 SHAPES = 8;
+const uint8 SHAPES = 5;
 const Shape OG_ROOM_SHAPES[SHAPES] = { DOUBLE_LINE_UP,
 DOUBLE_LINE_LEFT,
 DOUBLE_LINE_RIGHT,
 TRIANGLE_LEFT,
-TRIANGLE_RIGHT,
-TRIPLE_LINE_UP,
-TRIPLE_LINE_LEFT,
-TRIPLE_LINE_RIGHT };
+TRIANGLE_RIGHT };
 
 uint8 Shape::getRandomShape(uint8 size, FRandomStream* rand) {
 	int n = 0;

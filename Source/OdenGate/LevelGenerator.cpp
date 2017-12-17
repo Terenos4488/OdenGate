@@ -26,6 +26,7 @@ void ALevelGenerator::Clear() {
 void ALevelGenerator::Generate(int32 roomUnits, int32 seed) {
 	Clear();
 	uint8 roomId = 0;
+	seed = 7 * seed + 13 * roomUnits;
 	rand = new FRandomStream(seed);
 
 	ELevelSizes sizes[3] = { ELevelSizes::LITTLE, ELevelSizes::MEDIUM, ELevelSizes::TALL };
@@ -55,20 +56,16 @@ void ALevelGenerator::Generate(int32 roomUnits, int32 seed) {
 		tallRooms.Add(tr);
 	}
 	
-	// Tiny rooms generation : simple rooms, treasure rooms, npc rooms
+	// Tiny rooms generation : simple rooms, npc rooms
 	TArray<FHexRoom> tinyRooms;
-	tinyRooms.Add(FHexRoom(ERoomTypes::RT_TREASURE, roomId));
-	roomId++;
-	if (size == TALL || (size == MEDIUM && randomInt(0, 1) == 0)) {
-		tinyRooms.Add(FHexRoom(ERoomTypes::RT_TREASURE, roomId));
-		roomId++;
-	}
+	uint8 treasureRooms = 1 + (size == TALL ? 1 : 0) + (size == MEDIUM ? randomInt(0, 1) : 0);
 	uint8 npcRooms = randomInt(0, sizeIndex + 1);
 	for (uint8 i = 0; i < npcRooms; i++) {
 		tinyRooms.Add(FHexRoom(ERoomTypes::RT_NPC, roomId));
 		roomId++;
 	}
-	for (uint8 i = tinyRooms.Num() - 1; i < roomUnits - 3 * threeRooms - 2 * twoRooms - 4; i++) {
+	int8 restingTinyRooms = roomUnits - 3 * threeRooms - 2 * twoRooms - 4 - treasureRooms;
+	for (int8 i = tinyRooms.Num() - 1; i < restingTinyRooms; i++) {
 		tinyRooms.Add(FHexRoom(ERoomTypes::RT_SIMPLE, roomId));
 		roomId++;
 	}
@@ -219,15 +216,18 @@ void ALevelGenerator::Generate(int32 roomUnits, int32 seed) {
 	
 	// Détecter toutes les salles sans accès et y ajouter une porte
 	TArray<FCoords> occupiedCoords;
+	TArray<FCoords> farOccupiedCoords;
 	for (auto entry : grid) {
 		occupiedCoords.Add(entry.Key);
+		if (FMath::Abs(entry.Key.x) > 1 || FMath::Abs(entry.Key.y) > 1)
+			farOccupiedCoords.Add(entry.Key);
 		if (countDoors(entry.Value) == 0)
 			saveDoor(entry.Key);
 	}
 	
 	// Ajouter quelques portes au hasard entre des salles
-	for (uint8 i = 0; i < floor(grid.Num() * 0.2); i++) { // TODO paramétriser
-		FCoords c1 = occupiedCoords[randomInt(0, occupiedCoords.Num() - 1)];
+	for (uint8 i = 0; i < floor(grid.Num() * 0.5); i++) {
+		FCoords c1 = farOccupiedCoords[randomInt(0, farOccupiedCoords.Num() - 1)];
 		FHexRoom r1 = grid[c1];
 		if (r1.maxDoors == countDoors(r1))
 			continue;
@@ -263,7 +263,13 @@ void ALevelGenerator::Generate(int32 roomUnits, int32 seed) {
 				if (saveDoor(c, true))
 					break;
 	}
-	
+
+	// Placer les salles Treasure
+	for (uint8 i = 0; i < treasureRooms; i++) {
+		placeMandatoryRoom(FHexRoom(ERoomTypes::RT_TREASURE, roomId), 1, size);
+		roomId++;
+	}
+
 	// Placer la salle Shop
 	placeMandatoryRoom(FHexRoom(ERoomTypes::RT_SHOP, roomId), 2, size);
 	roomId++;
@@ -422,11 +428,11 @@ TArray<FCoords> ALevelGenerator::getFreeCloseCoords(bool upOnly, uint8 distanceF
 		coords.Add(entry.Key);
 
 	for (FCoords c : coords)
-		if (grid[c].roomType != ERoomTypes::RT_SHOP)
+		if (grid[c].roomType != ERoomTypes::RT_SHOP && grid[c].roomType != ERoomTypes::RT_TREASURE)
 			for (const FCoords dir : DIRECTIONS) {
 				FCoords nc = c + dir;
-				isFarAway = nc.x * nc.y >= 0 ? ((nc.x > nc.y ? nc.x : nc.y) >= distanceFromStart)
-					: ((nc.x + nc.y) >= distanceFromStart);
+				isFarAway = nc.x * nc.y >= 0 ? ((nc.x > nc.y ? FMath::Abs(nc.x) : FMath::Abs(nc.y)) >= distanceFromStart)
+					: ((FMath::Abs(nc.x) + FMath::Abs(nc.y)) >= distanceFromStart);
 				isUpForUpOnly = !upOnly || (nc.x > 0 && nc.y > 0);
 				contains = freeCloseCoords.Contains(nc);
 
