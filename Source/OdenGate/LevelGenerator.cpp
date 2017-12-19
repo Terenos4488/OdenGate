@@ -210,6 +210,12 @@ void ALevelGenerator::Generate(int32 roomUnits, int32 seed) {
 		uint8 roomIndex = randomInt(0, emptyRooms.Num() - 1);
 		FHexRoom room = emptyRooms[roomIndex];
 		room.bChallenge = true;
+		grid[room.origin].bChallenge = true;
+		if (room.roomType == ERoomTypes::RT_TALL) {
+			for (auto entry : grid)
+				if (entry.Value.origin == room.origin)
+					entry.Value.bChallenge = true;
+		}
 		currentChallengeRooms += room.size;
 		emptyRooms.RemoveAt(roomIndex);
 	}
