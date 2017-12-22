@@ -25,10 +25,7 @@ enum class ERoomShapes : uint8
 	DLL		UMETA(DisplayName = "Double Line Left"),
 	DLR		UMETA(DisplayName = "Double Line Right"),
 	TL		UMETA(DisplayName = "Triangle Left"),
-	TR		UMETA(DisplayName = "Triangle Right"),
-	TLU		UMETA(DisplayName = "Triple Line Up"),
-	TLL		UMETA(DisplayName = "Triple Line Left"),
-	TLR		UMETA(DisplayName = "Triple Line Right")
+	TR		UMETA(DisplayName = "Triangle Right")
 };
 
 USTRUCT(BlueprintType)
